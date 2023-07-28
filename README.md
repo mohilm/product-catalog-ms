@@ -51,9 +51,9 @@ http://localhost:8080/api/v1/products/approval-queue/{approvalId}/reject
 
 ## Http Status
 
-200 OK: OK - The request has succeeded
-201 OK: CREATED - New resource has been created
-400 Bad Request: BD_REQUEST - The request was invalid or cannot be served
+
+200 OK: CREATED - New resource has been created
+400 Bad Request: BAD_REQUEST - The request was invalid or cannot be served
 404 Not Found: NOT_FOUND - There is no resource behind the URL
 500 Internal Server Error: The server encountered an unexpected condition
  
