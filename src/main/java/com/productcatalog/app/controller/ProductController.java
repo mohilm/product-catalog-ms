@@ -8,9 +8,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.productcatalog.app.exception.ProductCatalogException;
+import com.productcatalog.app.exception.ResourceNotFoundException;
 import com.productcatalog.app.model.ApprovalQueue;
 import com.productcatalog.app.model.Product;
 import com.productcatalog.app.model.Status;
@@ -33,6 +34,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
+@Validated
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
@@ -125,9 +127,11 @@ public class ProductController {
 	 * 
 	 */
 	@PostMapping
-	public ResponseEntity<String> createProduct(@RequestBody @Valid Product product) {
+	public ResponseEntity<Object> createProduct(@RequestBody @Valid Product product) {
 		try {
 			return productService.createProductwithApprovalCheck(product);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage());
 		} catch (Exception e) {
 			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
 		}
@@ -149,10 +153,13 @@ public class ProductController {
 	 * 
 	 */
 	@PutMapping(value = "/{productId}")
-	ResponseEntity<String> updateProduct(@PathVariable("productId") @Min(1) Long id,
+	ResponseEntity<Object> updateProduct(@PathVariable("productId") @Min(1) Long id,
 			@Valid @RequestBody Product product) {
 		try {
 			return productService.updateProductWithApprovalCheck(id, product);
+		} 
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage());
 		} catch (Exception e) {
 			throw new ProductCatalogException("Update Product Failed - " + e.getMessage());
 		}
@@ -172,7 +179,7 @@ public class ProductController {
 	 * 
 	 */
 	@DeleteMapping("/{productId}")
-	public ResponseEntity<String> deleteProduct(@PathVariable("productId") @NotNull Long productId) {
+	public ResponseEntity<Object> deleteProduct(@PathVariable("productId") @NotNull Long productId) {
 
 		try {
 			if (productId == null) {
@@ -204,8 +211,7 @@ public class ProductController {
 		try {
 			return approvalQueueRepository.findAllByOrderByApprovalRequestDateAsc();
 		} catch (Exception e) {
-			throw new ProductCatalogException(
-					"Not able to fetch the pending records at this moment - " + e.getMessage());
+			throw new ProductCatalogException("Error while retriving records in Approval Queue" + e.getMessage());
 		}
 
 	}
@@ -224,39 +230,29 @@ public class ProductController {
 	 * 
 	 */
 	@PutMapping("/approval-queue/{approvalId}/approve")
-	public ResponseEntity<String> approveProduct(@PathVariable Long approvalId) { //
+	public ResponseEntity<Object> approveProduct(@PathVariable Long approvalId) { //
 		try {
-			if (approvalId == null) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Approval ID cannot be null");
-			}
+			
 			return productService.approveProduct(approvalId);
-		} catch (Exception e) {
-			throw new ProductCatalogException("Unable to Approve Product - " + e.getMessage());
+		} 
+		
+		catch (ResourceNotFoundException e) {
+			throw new ResourceNotFoundException(e.getMessage());
+		} 
+		catch (Exception e) {
+			throw new ProductCatalogException("Error while processing records in Approval Queue"  + e.getMessage());
 		}
 	}
 
-	/**
-	 * 
-	 * @put this endpoint is used to reject the records.
-	 * 
-	 *      The controller provides a PUT endpoint
-	 *      "/api/v1/products/approval-queue/{approvalId}/reject" to reject a
-	 *      product in the approval queue by its approval ID. The method
-	 *      "rejectProduct()" accepts the approval ID as a path variable. It ensures
-	 *      that the approvalId is not null and then calls the
-	 *      "productService.rejectProduct()" method to handle the rejection process.
-	 * 
-	 * 
-	 */
 	@PutMapping("/approval-queue/{approvalId}/reject")
-	public ResponseEntity<String> rejectProduct(@PathVariable Long approvalId) { //
+	public ResponseEntity<Object> rejectProduct(@PathVariable Long approvalId) { //
 		try {
-			if (approvalId == null) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Approval ID cannot be null");
-			}
-			return productService.rejectProduct(approvalId);
+						return productService.rejectProduct(approvalId);
+		} 
+		catch (ResourceNotFoundException e) {
+			throw new ResourceNotFoundException(e.getLocalizedMessage());
 		} catch (Exception e) {
-			throw new ProductCatalogException("Unable to Reject Product - " + e.getMessage());
+			throw new ProductCatalogException("Error while processing records in Approval Queue " + e.getMessage());
 		}
 	}
 

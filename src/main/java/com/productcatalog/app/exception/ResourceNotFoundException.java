@@ -42,7 +42,7 @@ public class ResourceNotFoundException extends RuntimeException {
 	}
 
 	public ResourceNotFoundException(String message) {
-		super(message + " Not Found");
+		this.message = message;
 	}
 	
 	/**
