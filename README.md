@@ -88,7 +88,6 @@ I have attached screenshots of test results at the bottom of this file & also in
 1. If maxPostedDate is smaller than minPostedDate.
 ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/11ed7232-dcb7-4d88-837a-2cefdc807f7b)
 
-
 2. If minPrice and maxPrice are passed with same value.
 ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/4be0276e-c33a-479a-837c-abb0f663efa1)
 
@@ -118,7 +117,21 @@ I have attached screenshots of test results at the bottom of this file & also in
 9. Product updated successfully.
     ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/f2ae5d1f-e0ae-4a6f-baab-f684930e8bdc)
 
- 
+10. Update product failed as price is greatee than $10,000.
+    ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/7d84312d-e180-4a1b-8505-5d92f7851346)
+
+11. List all products in approval queue
+     ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/5e996fdb-ccab-4177-8d0f-4089486cf511)
+
+12. Product Approved Succesully from Approval Queue
+    ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/4c12b6ef-c5a0-4edc-89c3-10303613b9a3)
+
+ 13. Product Rejected from Approval Queue
+     ![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/7b2365c2-72ce-4260-ae45-47aaeb25ef2d)
+
+
+
+
 
 
 
