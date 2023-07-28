@@ -59,11 +59,14 @@ public class ProductController {
 	 *          and returns them as a list.
 	 * 
 	 * 
-	 * 
 	 */
 	@GetMapping
 	public List<Product> listActiveProducts() {
-		return productRepository.findProductByStatusOrderByPostedDateDesc(Status.ACTIVE);
+		try {
+			return productRepository.findProductByStatusOrderByPostedDateDesc(Status.ACTIVE);
+		} catch (Exception e) {
+			throw new ProductCatalogException("Search Active Product Failed - " + e.getMessage());
+		}
 	}
 
 	/**
@@ -102,6 +105,20 @@ public class ProductController {
 
 	}
 
+	/**
+	 * 
+	 * @creates a new product in the Database.
+	 * 
+	 *          The controller provides a POST endpoint "/api/v1/products" to create
+	 *          a new product. The method "createProduct()" accepts a JSON payload
+	 *          representing the new product. It performs validation using
+	 *          the @Valid annotation based on the Product model class. The product
+	 *          creation is done through the
+	 *          "productService.createProductwithApprovalCheck()" method, which
+	 *          includes approval checks.
+	 * 
+	 * 
+	 */
 	@PostMapping
 	public ResponseEntity<String> createProduct(@RequestBody @Valid Product product) {
 		try {
@@ -112,16 +129,43 @@ public class ProductController {
 
 	}
 
+	/**
+	 * 
+	 * @update an existing product in the Database.
+	 * 
+	 *         The controller provides a PUT endpoint "/api/v1/products/{productId}"
+	 *         to update an existing product by its ID. The method "updateProduct()"
+	 *         accepts the product ID and a JSON payload representing the updated
+	 *         product. It performs validation using the @Valid annotation based on
+	 *         the Product model class. The product update is done through the
+	 *         "productService.updateProductWithApprovalCheck()" method, which
+	 *         includes approval checks.
+	 * 
+	 * 
+	 */
 	@PutMapping(value = "/{productId}")
 	ResponseEntity<String> updateProduct(@PathVariable("productId") @Min(1) Long id,
 			@Valid @RequestBody Product product) {
 		try {
 			return productService.updateProductWithApprovalCheck(id, product);
 		} catch (Exception e) {
-			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
+			throw new ProductCatalogException("Update Product Failed - " + e.getMessage());
 		}
 	}
 
+	/**
+	 * 
+	 * @delete an existing product .
+	 * 
+	 *         The controller provides a DELETE endpoint
+	 *         "/api/v1/products/{productId}" to delete a product by its ID. The
+	 *         method "deleteProduct()" accepts the product ID as a path variable.
+	 *         It ensures that the productId is not null and then calls the
+	 *         "productService.deleteProductWithApproval()" method to handle
+	 *         deletion with approval checks.
+	 * 
+	 * 
+	 */
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<String> deleteProduct(@PathVariable("productId") @NotNull Long productId) {
 
@@ -131,22 +175,49 @@ public class ProductController {
 			}
 			return productService.deleteProductWithApproval(productId);
 		} catch (Exception e) {
-			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
+			throw new ProductCatalogException("Delete Product Failed - " + e.getMessage());
 		}
 
 	}
 
+	/**
+	 * 
+	 * @get all the records which are in pending approval status.
+	 * 
+	 *      The controller provides a PUT endpoint
+	 *      "/api/v1/products/approval-queue/{approvalId}/approve" to approve a
+	 *      product in the approval queue by its approval ID. The method
+	 *      "approveProduct()" accepts the approval ID as a path variable. It
+	 *      ensures that the approvalId is not null and then calls the
+	 *      "productService.approveProduct()" method to handle the approval process.
+	 * 
+	 * 
+	 */
 	@GetMapping("/approval-queue")
 	public List<ApprovalQueue> getAllProductsInApprovalQueue() {
 
 		try {
 			return approvalQueueRepository.findAllByOrderByApprovalRequestDateAsc();
 		} catch (Exception e) {
-			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
+			throw new ProductCatalogException(
+					"Not able to fetch the pending records at this moment - " + e.getMessage());
 		}
 
 	}
 
+	/**
+	 * 
+	 * @put this endpoint is used to approve the records.
+	 * 
+	 *      The controller provides a PUT endpoint
+	 *      "/api/v1/products/approval-queue/{approvalId}/approve" to approve a
+	 *      product in the approval queue by its approval ID. The method
+	 *      "approveProduct()" accepts the approval ID as a path variable. It
+	 *      ensures that the approvalId is not null and then calls the
+	 *      "productService.approveProduct()" method to handle the approval process.
+	 * 
+	 * 
+	 */
 	@PutMapping("/approval-queue/{approvalId}/approve")
 	public ResponseEntity<String> approveProduct(@PathVariable Long approvalId) { //
 		try {
@@ -155,10 +226,23 @@ public class ProductController {
 			}
 			return productService.approveProduct(approvalId);
 		} catch (Exception e) {
-			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
+			throw new ProductCatalogException("Unable to Approve Product - " + e.getMessage());
 		}
 	}
 
+	/**
+	 * 
+	 * @put this endpoint is used to reject the records.
+	 * 
+	 *      The controller provides a PUT endpoint
+	 *      "/api/v1/products/approval-queue/{approvalId}/reject" to reject a
+	 *      product in the approval queue by its approval ID. The method
+	 *      "rejectProduct()" accepts the approval ID as a path variable. It ensures
+	 *      that the approvalId is not null and then calls the
+	 *      "productService.rejectProduct()" method to handle the rejection process.
+	 * 
+	 * 
+	 */
 	@PutMapping("/approval-queue/{approvalId}/reject")
 	public ResponseEntity<String> rejectProduct(@PathVariable Long approvalId) { //
 		try {
@@ -167,7 +251,7 @@ public class ProductController {
 			}
 			return productService.rejectProduct(approvalId);
 		} catch (Exception e) {
-			throw new ProductCatalogException("Create Product Failed - " + e.getMessage());
+			throw new ProductCatalogException("Unable to Reject Product - " + e.getMessage());
 		}
 	}
 
