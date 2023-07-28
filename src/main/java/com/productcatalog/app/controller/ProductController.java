@@ -71,7 +71,7 @@ public class ProductController {
 
 	/**
 	 * 
-	 * @returns a list of all active products
+	 * @returns a list of all active products based on criteria passed in request params
 	 * 
 	 *          The controller provides an endpoint "/api/v1/products/search" to
 	 *          search products based on various criteria. The method
@@ -92,14 +92,19 @@ public class ProductController {
 	 * 
 	 */
 	@GetMapping("/search")
-	public List<Product> searchProducts(@RequestParam(required = false) String productName,
-			@RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice,
-			@RequestParam(value = "minPostedDate") @DateTimeFormat(pattern = "MM/dd/yyyy") @Valid LocalDateTime minPostedDate,
-			@RequestParam(value = "maxPostedDate") @DateTimeFormat(pattern = "MM/dd/yyyy") @Valid LocalDateTime maxPostedDate) {
+	public List<Product> searchProducts(
+			@RequestParam(required = false) String productName, 
+			@RequestParam(required = false) Double minPrice,
+			@RequestParam(required = false) Double maxPrice,
+			@Valid @RequestParam  (required = false) LocalDateTime minPostedDate,
+			@Valid @RequestParam (required = false)  LocalDateTime maxPostedDate) {
 		try {
-			return productService.searchProductsBasedOnSearchCriteria(productName, minPrice, maxPrice, minPostedDate,
-					maxPostedDate);
-		} catch (Exception e) {
+		return productService.searchProductsBasedOnSearchCriteria(productName,minPrice,maxPrice, minPostedDate, maxPostedDate);
+		} 
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		catch (Exception e) {
 			throw new ProductCatalogException("Search Product based on criteria failed - " + e.getMessage());
 		}
 

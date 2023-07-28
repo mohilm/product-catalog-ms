@@ -63,6 +63,16 @@ PUT- Reject a product
 http://localhost:8080/api/v1/products/approval-queue/{approvalId}/reject
 
 
+## Validations
+/search endpoint
+  mix price and max price cannot be the same,
+  acceptable date format for minPostedDate & maxPostedDate is
+  eg: http://localhost:8080/api/products/search?minPrice=0&maxPrice=10&minPostedDate=2023-07-27T23:02:03&maxPostedDate=2023-07-27T23:02:03
+
+I have attached test results of validation in root path of the project, the file name is "testing-screenshots.docx"
+
+
+
 ## Http Status
 
 
@@ -72,9 +82,3 @@ http://localhost:8080/api/v1/products/approval-queue/{approvalId}/reject
 500 Internal Server Error: The server encountered an unexpected condition
  
 
-
-## Validations
-/search endpoint
-  mix price and max price cannot be the same,
-  acceptable date format for minPostedDate & maxPostedDate is
-  eg: http://localhost:8080/api/products/search?minPrice=0&maxPrice=10&minPostedDate=2023-07-27T23:02:03&maxPostedDate=2023-07-27T23:02:03
