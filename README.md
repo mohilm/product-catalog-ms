@@ -60,6 +60,7 @@ http://localhost:8080/api/v1/products/approval-queue/{approvalId}/reject
 
 
 ## Validations
+/search endpoint
   mix price and max price cannot be the same,
   acceptable date format for minPostedDate & maxPostedDate is
   eg: http://localhost:8080/api/products/search?minPrice=0&maxPrice=10&minPostedDate=2023-07-27T23:02:03&maxPostedDate=2023-07-27T23:02:03
