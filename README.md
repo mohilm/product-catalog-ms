@@ -42,7 +42,7 @@ GET- Get all active products
 http://localhost:8080/api/v1/products
 
 GET- Get all products based on optional params passed in request params
-http://localhost:8080/api/v1/products?productName&minPrice&maxPrice&minPostedDate&maxPostedDate
+http://localhost:8080/api/v1/products?productName=?&minPrice=?&maxPrice=?&minPostedDate=?&maxPostedDate=?
 
 POST- create a new product
 http://localhost:8080/api/v1/products
