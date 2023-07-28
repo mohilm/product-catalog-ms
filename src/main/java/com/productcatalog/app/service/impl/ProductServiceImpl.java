@@ -1,11 +1,11 @@
 package com.productcatalog.app.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +22,36 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 
 	@Autowired
 	private ApprovalQueueRepository approvalQueueRepository;
 
+	@Override
+	public List<Product> searchProductsBasedOnSearchCriteria(String productName, Double minPrice, Double maxPrice,
+			LocalDateTime minPostedDate, LocalDateTime maxPostedDate) {
+		// Validations: Ensure that the maxPrice is greater than or equal to minPrice
+		if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) >= 0) {
+			throw new IllegalArgumentException("maxPrice should be greater than or equal to minPrice");
+		}
+
+		// Validations: Ensure that the maxPostedDate is after or equal to minPostedDate
+		if (minPostedDate != null && maxPostedDate != null && minPostedDate.isAfter(maxPostedDate)) {
+			throw new IllegalArgumentException("maxPostedDate should be after or equal to minPostedDate");
+		}
+		log.info("After ValidationRetrieving product on the basis of the search criteria");
+		return productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetween(productName, minPrice,
+				maxPrice, minPostedDate, maxPostedDate);
+	}
+
 	public ResponseEntity<String> createProductwithApprovalCheck(Product product) {
 		String response = null;
 		if (product.getPrice() <= ProductCatalogConstants.MAX_PRICE) {
-			
+
 			if (product.getPrice() > 5000) {
-				
+
 				ApprovalQueue approvalQueue = new ApprovalQueue();
 				product.setPostedDate(LocalDateTime.now());
 				approvalQueue.setName(product.getName());

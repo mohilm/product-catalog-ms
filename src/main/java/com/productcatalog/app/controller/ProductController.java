@@ -5,11 +5,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,31 +45,38 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 
+	/**
+	 * 
+	 * @returns a list of all active products
+	 * 
+	 *          The controller provides an endpoint "/api/v1/products" to retrieve a
+	 *          list of active products.
+	 * 
+	 *          The method "listActiveProducts()" queries the database for products
+	 *          with the "ACTIVE" status and orders them with the latest added
+	 *          record first
+	 * 
+	 *          and returns them as a list.
+	 * 
+	 * 
+	 * 
+	 */
 	@GetMapping
 	public List<Product> listActiveProducts() {
 		return productRepository.findProductByStatusOrderByPostedDateDesc(Status.ACTIVE);
 	}
 
 	@GetMapping("/search")
-	public List<Product> searchProducts(
-			@RequestParam(required = false) String productName, 
-			@RequestParam(required = false) Double minPrice,
-			@RequestParam(required = false) Double maxPrice,
-			@RequestParam(required = false) @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", message = "minPostedDate must be in the format 'yyyy-MM-dd'T'HH:mm:ss'") LocalDateTime minPostedDate,
-			@RequestParam(required = false) @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", message = "maxPostedDate must be in the format 'yyyy-MM-dd'T'HH:mm:ss'") LocalDateTime maxPostedDate) {
-
-		// Validations: Ensure that the maxPrice is greater than or equal to minPrice
-		if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) >= 0) {
-			throw new IllegalArgumentException("maxPrice should be greater than or equal to minPrice");
+	public List<Product> searchProducts(@RequestParam(required = false) String productName,
+			@RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice,
+			@RequestParam(value = "minPostedDate") @DateTimeFormat(pattern = "MM/dd/yyyy") @Valid LocalDateTime minPostedDate,
+			@RequestParam(value = "maxPostedDate") @DateTimeFormat(pattern = "MM/dd/yyyy") @Valid LocalDateTime maxPostedDate) {
+		try {
+			return productService.searchProductsBasedOnSearchCriteria(productName, minPrice, maxPrice, minPostedDate,
+					maxPostedDate);
+		} catch (Exception e) {
+			throw new ProductCatalogException("Search Product based on criteria failed - " + e.getMessage());
 		}
-
-		// Validations: Ensure that the maxPostedDate is after or equal to minPostedDate
-		if (minPostedDate != null && maxPostedDate != null && minPostedDate.isAfter(maxPostedDate)) {
-			throw new IllegalArgumentException("maxPostedDate should be after or equal to minPostedDate");
-		}
-		log.info("Retrieving product on the basis of the search criteria");
-		return productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetween(productName, minPrice,
-				maxPrice, minPostedDate, maxPostedDate);
 
 	}
 
