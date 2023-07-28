@@ -26,6 +26,12 @@ The configuration is specified in application.properties,
 please update the datasource values like username,password
 if you have your own local instance of MySQL server up and running.
  
+## Database connection
+
+Used MySQL as datasource with Hibernate as Dialect.
+The configuration is specified in application.properties,
+please update the datasource values like username,password
+if you have your own local instance of MySQL server up and running.
 
 ## Available RESTful APIs
 
@@ -36,7 +42,7 @@ GET- Get all active products
 http://localhost:8080/api/v1/products
 
 GET- Get all products based on optional params passed in request params
-http://localhost:8080/api/v1/products?productName&minPrice&maxPrice&minPostedDate&maxPostedDate
+http://localhost:8080/api/v1/products?productName=?&minPrice=?&maxPrice=?&minPostedDate=?&maxPostedDate=?
 
 POST- create a new product
 http://localhost:8080/api/v1/products
