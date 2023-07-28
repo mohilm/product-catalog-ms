@@ -18,6 +18,12 @@ Used the below gradle command for building the application
 
 gradle clean build
  
+## Database connection
+
+Used MySQL as datasource with Hibernate as Dialect.
+The configuration is specified in application.properties,
+please update the datasource values like username,password
+if you have your own local instance of MySQL server up and running.
 
 ## Available RESTful APIs
 
