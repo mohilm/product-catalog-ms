@@ -66,6 +66,28 @@ public class ProductController {
 		return productRepository.findProductByStatusOrderByPostedDateDesc(Status.ACTIVE);
 	}
 
+	/**
+	 * 
+	 * @returns a list of all active products
+	 * 
+	 *          The controller provides an endpoint "/api/v1/products/search" to
+	 *          search products based on various criteria. The method
+	 *          "searchProducts()" accepts optional query parameters like
+	 *          productName, minPrice, maxPrice, minPostedDate, and maxPostedDate.
+	 *          It performs validation checks on the query parameters, ensuring that
+	 *          minPrice <= maxPrice and minPostedDate <= maxPostedDate. The search
+	 *          is performed by calling the "productRepository" with the search
+	 *          criteria and returning the matched products.
+	 * 
+	 *          The method "listActiveProducts()" queries the database for products
+	 *          with the "ACTIVE" status and orders them with the latest added
+	 *          record first
+	 * 
+	 *          and returns them as a list.
+	 * 
+	 * 
+	 * 
+	 */
 	@GetMapping("/search")
 	public List<Product> searchProducts(@RequestParam(required = false) String productName,
 			@RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice,
