@@ -5,7 +5,6 @@ plugins {
     
     id 'com.diffplug.eclipse.apt' version '3.37.2'
 }
-}
 
 group = 'com.productcatalog'
 version = '0.0.1-SNAPSHOT'
