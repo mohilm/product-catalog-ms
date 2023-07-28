@@ -80,5 +80,10 @@ I have attached test results of validation in root path of the project, the file
 400 Bad Request: BAD_REQUEST - The request was invalid or cannot be served
 404 Not Found: NOT_FOUND - There is no resource behind the URL
 500 Internal Server Error: The server encountered an unexpected condition
+
+
+
+![image](https://github.com/mohilm/product-catalog-ms/assets/13063336/11ed7232-dcb7-4d88-837a-2cefdc807f7b)
+
  
 
