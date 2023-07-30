@@ -24,35 +24,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	
+	public Product(String name, Double price, Status status, LocalDateTime postedDate) {
+		super();
+		this.name = name;
+		this.price = price;
+		this.status = status;
+		this.postedDate = postedDate;
+	}
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    
-    @Column
-    @NotBlank(message = "Name is mandatory")
-    @Size(max=255)
-    private String name;
+	@Column
+	@NotBlank(message = "Name is mandatory")
+	@Size(max = 255)
+	private String name;
 
-    @Column
-    @DecimalMin(value = "0.0", inclusive = false)
-    @DecimalMax(value = "10000.0") // Assuming a maximum price of 10,000
-    private Double price;
+	@Column
+	@DecimalMin(value = "0.0", inclusive = false)
+	@DecimalMax(value = "10000.0") // Assuming a maximum price of 10,000
+	private Double price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="status")
-    private Status status;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private Status status;
 
-    @Column
-    private LocalDateTime postedDate  = LocalDateTime.now();
-    
-    
-    public Product( String name, Double price, Status status, LocalDateTime postedDate) {
-    	this.name = name;
-        this.price = price;
-        this.status = status;
-        this.postedDate = postedDate;
-    }
-    
-      
+	@Column
+	private LocalDateTime postedDate = LocalDateTime.now();
+
+
 }
