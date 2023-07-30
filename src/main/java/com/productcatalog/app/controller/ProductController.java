@@ -94,7 +94,7 @@ public class ProductController {
 	 * 
 	 */
 	@GetMapping("/search")
-	public List<Product> searchProducts(
+	public ResponseEntity<List<Product>> searchProducts(
 			@RequestParam(required = false) String productName, 
 			@RequestParam(required = false) Double minPrice,
 			@RequestParam(required = false) Double maxPrice,
@@ -103,7 +103,7 @@ public class ProductController {
 		try {
 		return productService.searchProductsBasedOnSearchCriteria(productName,minPrice,maxPrice, minPostedDate, maxPostedDate);
 		} 
-		catch (IllegalArgumentException e) {
+		catch (IllegalArgumentException e ) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		catch (Exception e) {

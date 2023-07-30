@@ -153,11 +153,11 @@ public class ProductServiceTest {
         // Add some products to the list (you can add more for different scenarios)
         mockProducts.add(new Product("Product A", 200.0,Status.ACTIVE, LocalDateTime.parse("2023-02-01T12:00:00")));
         mockProducts.add(new Product("Product B", 300.0, Status.ACTIVE, LocalDateTime.parse("2023-03-15T10:30:00")));
-        Mockito.when(productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetween(
-                productName, minPrice, maxPrice, minPostedDate, maxPostedDate)).thenReturn(mockProducts);
+        Mockito.when(productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetweenAndStatus(
+               productName, minPrice, maxPrice, minPostedDate, maxPostedDate ,Status.ACTIVE)).thenReturn(mockProducts);
 
         // Perform the service method call
-        List<Product> result;
+        ResponseEntity<List<Product>> result;
         try {
             result = productService.searchProductsBasedOnSearchCriteria(productName, minPrice, maxPrice,
                     minPostedDate, maxPostedDate);
@@ -168,7 +168,7 @@ public class ProductServiceTest {
 
         // Assertions
         assertNotNull(result);
-        assertEquals(2, result.size()); // Ensure the correct number of products is returned
+        assertEquals(2, ((Map<String, Object>) result).size()); // Ensure the correct number of products is returned
         // Add more specific assertions based on your use case and test data
     }
 

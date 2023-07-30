@@ -33,6 +33,7 @@ public class Product {
 		this.postedDate = postedDate;
 	}
 	
+    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -49,7 +50,7 @@ public class Product {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	private Status status;
+	private Status status = Status.ACTIVE;
 
 	@Column
 	private LocalDateTime postedDate = LocalDateTime.now();
