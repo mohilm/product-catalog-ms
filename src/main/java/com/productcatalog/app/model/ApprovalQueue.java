@@ -18,11 +18,21 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Table
 public class ApprovalQueue {
     
+	public ApprovalQueue(String name, Double price, Status status, LocalDateTime postedDate, 
+			 Long productId) {
+		super();
+		this.name = name;
+		this.price = price;
+		this.status = status;
+		this.postedDate = postedDate;
+		this.productId = productId;
+	}
+
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

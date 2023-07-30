@@ -122,37 +122,44 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	public ResponseEntity<Object> approveProduct(Long approvalId) {
-		if (approvalId == null) {
-			throw new IllegalArgumentException("Approval ID cannot be null");
-		}
-		ApprovalQueue approveQueueData = approvalQueueRepository.findById(approvalId).orElseThrow(
-				() -> new ResourceNotFoundException("No ID in Approval Queue with ID " + approvalId + " found!"));
-		Long productId = approveQueueData.getProductId();
-		if (productId != null) {
-			Optional<Product> productOptional = productRepository.findById(productId);
-			if (productOptional.isPresent()) {
-				Product product = productOptional.get();
-				product.setName(approveQueueData.getName());
-				product.setPrice(approveQueueData.getPrice());
-				product.setStatus(approveQueueData.getStatus());
-				product.setPostedDate(LocalDateTime.now());
-				log.info("Product approved successfully and product updated");
-				productRepository.save(product);
+	    if (approvalId == null) {
+	        throw new IllegalArgumentException("Approval ID cannot be null");
+	    }
 
-			}
-		} else {
-			Product product = new Product();
-			product.setName(approveQueueData.getName());
-			product.setPrice(approveQueueData.getPrice());
-			product.setStatus(approveQueueData.getStatus());
-			product.setPostedDate(LocalDateTime.now());
-			log.info("Product approved successfully and product added");
-			productRepository.save(product);
-		}
-		approvalQueueRepository.delete(approveQueueData);
-		return ResponseHandler.generateResponse("Product approved successfully and product updated", HttpStatus.OK);
-		
+	    ApprovalQueue approveQueueData = approvalQueueRepository.findById(approvalId).orElseThrow(
+	            () -> new ResourceNotFoundException("No ID in Approval Queue with ID " + approvalId + " found!"));
+
+	    Long productId = approveQueueData.getProductId();
+	    if (productId != null) {
+	        Optional<Product> productOptional = productRepository.findById(productId);
+	        if (productOptional.isPresent()) {
+	            Product product = productOptional.get();
+	            product.setName(approveQueueData.getName());
+	            product.setPrice(approveQueueData.getPrice());
+	            product.setStatus(approveQueueData.getStatus());
+	            product.setPostedDate(LocalDateTime.now());
+	            log.info("Product approved successfully and product updated");
+	            productRepository.save(product);
+	            approvalQueueRepository.delete(approveQueueData);
+	            return ResponseHandler.generateResponse("Product approved successfully and product updated", HttpStatus.OK);
+	        }
+	    } else {
+	        Product product = new Product();
+	        product.setName(approveQueueData.getName());
+	        product.setPrice(approveQueueData.getPrice());
+	        product.setStatus(approveQueueData.getStatus());
+	        product.setPostedDate(LocalDateTime.now());
+	        log.info("Product approved successfully and product added");
+	        productRepository.save(product);
+	        approvalQueueRepository.delete(approveQueueData);
+	        return ResponseHandler.generateResponse("Product approved successfully and product added", HttpStatus.OK);
+	    }
+
+	    // If neither of the above conditions is satisfied, delete the approvalQueueData and return
+	    approvalQueueRepository.delete(approveQueueData);
+	    return ResponseHandler.generateResponse("Product approval process completed", HttpStatus.OK);
 	}
+
 
 	public ResponseEntity<Object>rejectProduct(Long approvalId) {
 		if (approvalId == null) {
@@ -183,6 +190,6 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetween(productName, minPrice,
 				maxPrice, minPostedDate, maxPostedDate);
 	}
-	
+		
 	
 }
