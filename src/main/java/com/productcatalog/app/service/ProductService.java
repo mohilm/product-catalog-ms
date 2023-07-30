@@ -18,6 +18,6 @@ public interface ProductService {
 
 	public ResponseEntity<Object> rejectProduct(Long approvalId);
 
-	public List<Product> searchProductsBasedOnSearchCriteria(String productName, Double minPrice, Double maxPrice,
+	public ResponseEntity<List<Product>> searchProductsBasedOnSearchCriteria(String productName, Double minPrice, Double maxPrice,
 			LocalDateTime minPostedDate, LocalDateTime maxPostedDate) throws Exception;
 }

@@ -34,8 +34,11 @@ public class ProductServiceImpl implements ProductService {
 
 	public ResponseEntity<Object> createProductwithApprovalCheck(Product product) {
 		String response = null;
-		if (product.getPrice() <= ProductCatalogConstants.MAX_PRICE) {
-
+		if(product.getName()==null) {
+			throw new IllegalArgumentException("Product name cannot be null");
+		}
+		if (product.getPrice()!=null) {
+			if(product.getPrice() <= ProductCatalogConstants.MAX_PRICE) {
 			if (product.getPrice() > 5000) {
 				ApprovalQueue approvalQueue = new ApprovalQueue();
 				product.setPostedDate(LocalDateTime.now());
@@ -53,14 +56,22 @@ public class ProductServiceImpl implements ProductService {
 				response = "Product Created Successfully";
 			}
 			return ResponseHandler.generateResponse(response, HttpStatus.OK);
-
-
-		} else {
-			
-				throw new IllegalArgumentException("Product price exceeds 10,000. Hence not saved.");
+			}
+			 else {
+					
+					throw new IllegalArgumentException("Product price exceeds 10,000. Hence not saved.");
+				
+			}
 			
 		}
-	}
+		else {
+			productRepository.save(product);
+			log.info("Product Created successfully");
+			response = "Product Created Successfully";
+			return ResponseHandler.generateResponse(response, HttpStatus.OK);
+		}
+			
+		}
 
 	public ResponseEntity<Object> updateProductWithApprovalCheck(Long productId, Product updatedProduct) {
 		Optional<Product> productOptional = productRepository.findById(productId);
@@ -73,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
 				
 			}
 			// Check if the new price is more than 50% of the previous price
-			Double fiftyPercentOfPreviousPrice = previousPrice * 1.5;
+			Double fiftyPercentOfPreviousPrice = previousPrice * 0.5;
 			if (updatedProduct.getPrice().compareTo(fiftyPercentOfPreviousPrice) > 0) {
 
 				ApprovalQueue approvalQueue = new ApprovalQueue();
@@ -175,21 +186,40 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<Product> searchProductsBasedOnSearchCriteria(String productName, Double minPrice, Double maxPrice,
+	public ResponseEntity<List<Product>> searchProductsBasedOnSearchCriteria(String productName, Double minPrice, Double maxPrice,
 			LocalDateTime minPostedDate, LocalDateTime maxPostedDate) throws Exception{
+		if(minPrice==null && maxPrice ==null &&  productName==null && minPostedDate==null && maxPostedDate==null) {
+			log.info("Validation successful : Fetching all active products as search criteria is empty");
+			List<Product> products =  productRepository.findProductByStatusOrderByPostedDateDesc(Status.ACTIVE);
+			return ResponseEntity.ok(products);
+			
+			}
 		// Validations: Ensure that the maxPrice is greater than or equal to minPrice
-		if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) >= 0) {
+		else if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) >= 0) {
+			log.info("Validation failed :: Max Price should be greater than min price");
 			throw new IllegalArgumentException("maxPrice should be greater than or equal to minPrice");
 		}
 
 		// Validations: Ensure that the maxPostedDate is after or equal to minPostedDate
-		if (minPostedDate != null && maxPostedDate != null && minPostedDate.isAfter(maxPostedDate)) {
+		else if(minPostedDate != null && maxPostedDate != null && minPostedDate.isAfter(maxPostedDate)) {
+			log.info("Validation failed :: Max posted date should be after min posted date");
 			throw new IllegalArgumentException("maxPostedDate should be after or equal to minPostedDate");
 		}
-		log.info("After ValidationRetrieving product on the basis of the search criteria");
-		return productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetween(productName, minPrice,
-				maxPrice, minPostedDate, maxPostedDate);
-	}
+		 
+		else {
+			log.info("Validation successful : Fetching active products based on search criteria");
+			List<Product> products =  productRepository.findByNameEqualsIgnoreCaseOrPriceBetweenOrPostedDateBetweenAndStatus(productName, minPrice,
+					maxPrice, minPostedDate, maxPostedDate,Status.ACTIVE);
+			if(products.isEmpty()) {
+				return ResponseHandler.generateResponseForEmptyProduct("No records found", HttpStatus.NO_CONTENT);
+			}
+			return ResponseEntity.ok(products);
+			
 		
+		}
+		
+	}
+
+	
 	
 }
