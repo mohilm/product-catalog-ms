@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Table
 public class Product {
@@ -48,7 +47,12 @@ public class Product {
     private LocalDateTime postedDate  = LocalDateTime.now();
     
     
-   
+    public Product( String name, Double price, Status status, LocalDateTime postedDate) {
+    	this.name = name;
+        this.price = price;
+        this.status = status;
+        this.postedDate = postedDate;
+    }
     
       
 }

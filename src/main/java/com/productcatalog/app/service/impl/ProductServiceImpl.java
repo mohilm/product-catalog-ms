@@ -30,6 +30,8 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ApprovalQueueRepository approvalQueueRepository;
 
+	
+
 	public ResponseEntity<Object> createProductwithApprovalCheck(Product product) {
 		String response = null;
 		if (product.getPrice() <= ProductCatalogConstants.MAX_PRICE) {
@@ -71,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 				
 			}
 			// Check if the new price is more than 50% of the previous price
-			Double fiftyPercentOfPreviousPrice = previousPrice * 0.5;
+			Double fiftyPercentOfPreviousPrice = previousPrice * 1.5;
 			if (updatedProduct.getPrice().compareTo(fiftyPercentOfPreviousPrice) > 0) {
 
 				ApprovalQueue approvalQueue = new ApprovalQueue();
